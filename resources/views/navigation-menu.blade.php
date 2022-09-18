@@ -18,7 +18,7 @@
                 </div> 
                 
                 <div class="hidden space-x-8 sm:-my-px sm:ml-10 sm:flex">
-                    <x-jet-nav-link class="text-decoration-none" href="{{ route('csvupload.index') }}" :active="request()->routeIs('csvupload.index')">
+                    <x-jet-nav-link class="text-decoration-none" href="{{ route('csvlist.index') }}" :active="request()->routeIs('csvlist.index')">
                         {{ __('CSV Uploader') }}
                     </x-jet-nav-link>
                 </div>

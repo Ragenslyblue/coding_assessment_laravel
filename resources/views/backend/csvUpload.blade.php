@@ -7,5 +7,11 @@
 
     <div id="app">
         <csv-uploader></csv-uploader>
+        
     </div>
+
+    <script>
+        
+    </script>
+    
 </x-app-layout>

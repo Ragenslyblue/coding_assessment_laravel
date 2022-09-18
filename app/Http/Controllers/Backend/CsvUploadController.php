@@ -3,9 +3,12 @@
 namespace App\Http\Controllers\Backend;
 
 use App\Http\Controllers\Controller;
+use App\Models\CeleImportModel;
 use App\Models\User;
+use App\Repositories\Interfaces\fileUploaderInterface;
 use Illuminate\Http\Request;
-use Yajra\DataTables\Facades\DataTables;
+use Yajra\DataTables\DataTables;
+use Illuminate\Support\Facades\Validator;
 
 class CsvUploadController extends Controller
 {
@@ -14,6 +17,13 @@ class CsvUploadController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
+    protected $fileUploader;
+
+    public function __construct(fileUploaderInterface $fileInterface)
+    {
+        $this->fileUploader = $fileInterface;
+    }
+
     public function index()
     {
         return view('backend.csvUpload');
@@ -26,17 +36,9 @@ class CsvUploadController extends Controller
      */
     public function CsvdataTable()
     {
-        $data = User::all();
-            return DataTables::of($data)
-                    // ->addIndexColumn()
-                    // ->addColumn('action', function($row){
-     
-                    //        $btn = '<a href="javascript:void(0)" class="edit btn btn-primary btn-sm">View</a>';
-    
-                    //         return $btn;
-                    // })
-                    // ->rawColumns(['action'])
-                    ->make(true);
+        $data = CeleImportModel::all();
+        return DataTables::of($data)
+            ->make(true);
     }
 
     /**
@@ -47,7 +49,22 @@ class CsvUploadController extends Controller
      */
     public function store(Request $request)
     {
-        //
+
+
+        $csvFile   =  $request->file('csvFile');
+
+        if ($csvFile->getClientOriginalExtension() != 'csv' || $csvFile->getClientMimeType() != 'text/csv') {
+            return 403;
+        }
+        $file_name = uniqid() . '_' . $csvFile->getClientOriginalName();
+
+        $file_path = public_path('/uploads/csv');
+
+        $csvFile->move($file_path, $file_name);
+
+        $csvFileUpload = $this->fileUploader->csvUpload($file_path . '/' . $file_name);
+
+        return $csvFileUpload;
     }
 
     /**

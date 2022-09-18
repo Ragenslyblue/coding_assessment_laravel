@@ -24,8 +24,9 @@ Route::middleware([
     'verified'
 ])->group(function () {
     Route::get('/dashboard', function () {return view('dashboard'); })->name('dashboard');
-    Route::get('/csvUpload', [CsvUploadController::class , 'index'])->name('csvupload.index');
-    Route::post('/csvUpload/getfrom/datatable', [CsvUploadController::class , 'index'])->name('csvupload.get.datatable');
+    Route::get('/csv/list', [CsvUploadController::class , 'index'])->name('csvlist.index');
+    Route::post('/csv/list/get/datatable', [CsvUploadController::class , 'CsvdataTable'])->name('csvlist.get.datatable');
+    Route::post('/csv/Upload', [CsvUploadController::class , 'store'])->name('csv.upload');
 });
 
 

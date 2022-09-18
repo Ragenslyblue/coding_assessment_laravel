@@ -1,0 +1,5 @@
+  Done Lists Pas123!@
+User registration
+  1.fix registration without checking terms and conditions
+  2.eye icon fix
+  

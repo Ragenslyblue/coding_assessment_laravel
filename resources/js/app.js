@@ -1,10 +1,13 @@
 import './bootstrap';
-
 import Alpine from 'alpinejs';
 global.$ = global.jQuery = require('jquery');
 window.Alpine = Alpine;
 Alpine.start();
 import csvUploader from './components/csvUploader.vue'
+import Swal from 'sweetalert2'
+import Toast from 'sweetalert2'
+window.Swal = Swal;
+window.Toast = Toast;
 import { createApp } from 'vue'
 
 const app = createApp({
@@ -12,5 +15,5 @@ const app = createApp({
         'csv-uploader' : csvUploader
     }
 })
-
 app.mount('#app')
+

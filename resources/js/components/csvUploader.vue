@@ -1,48 +1,206 @@
 <template>
-    <div>
-        <table class="table table-bordered csvUploadList">
-            <thead>
-                <tr>
-                    <th>No</th>
-                    <th>Name</th>
-                    <th>Email</th>
-                    <!-- <th width="100px">Action</th> -->
-                </tr>
-            </thead>
-        <tbody>
-        </tbody>
-    </table>
+  <div>
+    <div class="container-fluid mt-3">
+      <div class="card p-3 table-responsive">
+        <div class="row mb-3 shadow-sm pb-3">
+          <div class="col-md-2">
+            <label class="">Rank</label>
+            <select class="form-control">
+              <option disabled selected>Choose rank</option>
+              <option
+                v-for="rank in ranks"
+                v-bind:key="rank"
+                v-text="rank"
+              ></option>
+            </select>
+          </div>
+          <div class="col-md-2">
+            <label class="">Country</label>
+            <input
+              type="text"
+              class="form-control"
+              placeholder="Type country name"
+            />
+          </div>
+          <div class="col-md-2">
+            <label class="">Year</label>
+            <select class="form-control">
+              <option disabled selected>Choose year</option>
+              <option
+                v-for="year in years"
+                v-bind:key="year"
+                v-text="year"
+              ></option>
+            </select>
+          </div>
+          <div class="col-md-2">
+            <button class="btn btn-primary mt-4 col-12" @click="filterData()">
+              Filter <i class="fas fa-filter ml-2"></i>
+            </button>
+          </div>
+
+          <div class="col-md-4 mt-4">
+            <div class="d-flex justify-content-end">
+              <input
+                type="file"
+                class="hidden"
+                id="csvUpload"
+                @change="csvchoosed($event)"
+              />
+              <button
+                v-if="uploadBtn"
+                class="btn btn-primary btn-sm"
+                @click="csvUpload()"
+              >
+                Upload CSV <i class="fas fa-upload ml-2"></i>
+              </button>
+
+              <button v-if="!uploadBtn" class="btn btn-warning btn-sm mr-3">
+                  <i class="fa fa-spinner fa-spin fa-2x fa-fw mr-2"></i>
+                Your file is uploading....Please wait a moment...
+              </button>
+              <!-- <div v-if="!uploadBtn" class="loader"></div> -->
+            </div>
+          </div>
+        </div>
+
+        <table
+          class="table table-bordered table-striped table-hover"
+          id="tablecsc"
+        >
+          <thead>
+            <tr>
+              <th>Year</th>
+              <th>Rank</th>
+              <th>Recipient</th>
+              <th>Country</th>
+              <th>Career</th>
+              <th>Tied</th>
+              <th>Title</th>
+              <!-- <th width="100px">Action</th> -->
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
     </div>
+  </div>
 </template>
 
 <script>
-    export default {
-        data(){
-            return {
-
-            }
+import VueSweetalert2 from "vue-sweetalert2";
+export default {
+  data() {
+    return {
+      uploadBtn: true,
+      currentYear: new Date().getFullYear(),
+      years: [],
+      ranks: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
+      csvFile: "",
+      formData: new FormData(),
+      formDataConfig: {
+        headers: {
+          "content-type": "multipart/form-data",
         },
+      },
+    };
+  },
 
-        created(){
-           $(function () {
-    
-            var table = $('.csvUploadList').DataTable({
-                processing: true,
-                serverSide: true,
-                ajax: "{{ route('csvupload.get.datatable') }}",
-                columns: [
-                    {data: 'id', name: 'id'},
-                    {data: 'name', name: 'name'},
-                    {data: 'email', name: 'email'},
-                    // {data: 'action', name: 'action', orderable: false, searchable: false},
-                ]
-            });
-            
+  methods: {
+    csvchoosed(event) {
+      let csvFile = event.target.files[0];
+      if (csvFile.type == "text/csv") {
+        this.formData.append("csvFile", csvFile);
+        let point = this;
+        axios
+          .post("/csv/Upload", this.formData, this.formDataConfig)
+          .then(function (response) {
+            setTimeout(() => {
+              point.uploadBtn = true;
+              if (response.data == 200) {
+                point.Alert("success", "Uploaded successfully");
+              } else {
+                point.Alert(
+                  "error",
+                  "Please check your file and upload again,"
+                );
+              }
+            }, 1000);
+          });
+        this.uploadBtn = false;
+      } else {
+        this.Alert("error", "Wrong file format . CSV file only support.");
+      }
+
+      $("#csvUpload").val("");
+    },
+
+    csvUpload() {
+      $("#csvUpload").click();
+    },
+
+    dataTbaleLoad(year = null , rank = null , country = null) {
+      $(function () {
+        var table = $("#tablecsc").DataTable({
+          processing: true,
+          serverSide: true,
+          language: {
+      processing: '<i class="text-primary fa fa-spinner fa-spin fa-1x fa-fw mr-2"></i> <span class="text-primary">Processing</span>'
+    },
+          ajax: {
+            url: "/csv/list/get/datatable",
+            type: "post",
+            data: {
+              _token: document.head.querySelector('meta[name="csrf-token"]')
+                .content,
+                year : year,
+                rank : rank,
+                country : country,
+            },
+          },
+
+          columns: [
+            { data: "year", name: "year" },
+            { data: "rank", name: "rank" },
+            { data: "recipient", name: "recipient" },
+            { data: "country", name: "country" },
+            { data: "career", name: "career" },
+            { data: "tied", name: "tied" },
+            { data: "title", name: "title" },
+          ],
         });
-        }
+      });
+    },
+
+    filterData(){
+        $('#tablecsc').dataTable().fnDestroy();
+        this.dataTbaleLoad();
+    },
+
+    Alert(data, message) {
+      const Toast = Swal.mixin({
+        toast: true,
+        position: "top-end",
+        showConfirmButton: false,
+        timer: 5000,
+      });
+
+      Toast.fire({
+        icon: data,
+        title: message,
+      });
+    },
+  },
+
+  created() {
+    for (let i = 1999; i <= this.currentYear; i++) {
+      this.years.push(i);
     }
+
+    this.dataTbaleLoad()
+  },
+};
 </script>
 
 <style lang="scss" scoped>
-
 </style>
