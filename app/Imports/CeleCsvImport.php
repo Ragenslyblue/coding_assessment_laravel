@@ -15,15 +15,26 @@ class CeleCsvImport implements ToModel , WithHeadingRow
     */
     public function model(array $row)
     {
-        return new CeleImportModel([
-            'year'      => intval($row['year']),
-            'rank'      => intval($row['rank']),
-            'recipient' => $row['recipient'],
-            'country'   => $row['country'],
-            'career'    => $row['career'],
-            'tied'      => intval($row['tied']),
-            'title'     => $row['title'],
-        ]);
+        return  CeleImportModel::firstOrCreate(
+            [
+                'year'      => intval($row['year']),
+                'rank'      => intval($row['rank']),
+                'recipient' => $row['recipient'],
+                'country'   => $row['country'],
+                'career'    => $row['career'],
+                'tied'      => intval($row['tied']),
+                'title'     => $row['title'],
+            ],
+            [
+                'year'      => intval($row['year']),
+                'rank'      => intval($row['rank']),
+                'recipient' => $row['recipient'],
+                'country'   => $row['country'],
+                'career'    => $row['career'],
+                'tied'      => intval($row['tied']),
+                'title'     => $row['title'],
+            ],
+            );
     }
 
     public function headingRow(): int
@@ -31,5 +42,5 @@ class CeleCsvImport implements ToModel , WithHeadingRow
         return 1;
     }
 
-    
+
 }

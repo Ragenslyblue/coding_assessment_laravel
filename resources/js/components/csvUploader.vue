@@ -137,6 +137,8 @@ export default {
               point.uploadBtn = true;
               if (response.data == 200) {
                 point.Alert("success", "Uploaded successfully");
+                $("#tablecsc").dataTable().fnDestroy();
+                point.dataTbaleLoad();
               } else {
                 point.Alert(
                   "error",
@@ -194,14 +196,15 @@ export default {
 
     filterData() {
       if (
-        this.filter_rank == "" ||
-        this.filter_year == "" ||
-        this.filter_country == ""
+        this.filter_rank != "" ||
+        this.filter_year != "" ||
+        this.filter_country != ""
       ) {
-        this.Alert("warning", "Alteast one data is required to filter.");
-      } else {
         $("#tablecsc").dataTable().fnDestroy();
         this.dataTbaleLoad();
+      } else {
+        this.Alert("warning", "Alteast one data is required to filter.");
+
       }
     },
     clearFilter() {

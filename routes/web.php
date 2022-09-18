@@ -26,6 +26,7 @@ Route::middleware([
 ])->group(function () {
     Route::get('/dashboard', [dashboardController::class , 'index'])->name('dashboard');
     Route::post('/dashboard/count', [dashboardController::class , 'dashboardCount'])->name('dashboard.count');
+    Route::post('/dashboard/chart', [dashboardController::class , 'chart'])->name('dashboard.chart');
     Route::get('/csv/list', [CsvUploadController::class , 'index'])->name('csvlist.index');
     Route::post('/csv/list/get/datatable', [CsvUploadController::class , 'CsvdataTable'])->name('csvlist.get.datatable');
     Route::post('/csv/Upload', [CsvUploadController::class , 'store'])->name('csv.upload');
