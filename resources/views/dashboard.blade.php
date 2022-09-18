@@ -6,6 +6,6 @@
     </x-slot>
 
     <div id="app">
-        <h1>This is dashboard</h1>
+        <dashboard-view></dashboard-view>
     </div>
 </x-app-layout>

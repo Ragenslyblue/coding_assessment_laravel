@@ -5,8 +5,8 @@
         <div class="row mb-3 shadow-sm pb-3">
           <div class="col-md-2">
             <label class="">Rank</label>
-            <select class="form-control">
-              <option disabled selected>Choose rank</option>
+            <select class="form-control" v-model="filter_rank">
+              <option disabled selected value="">Choose rank</option>
               <option
                 v-for="rank in ranks"
                 v-bind:key="rank"
@@ -17,6 +17,7 @@
           <div class="col-md-2">
             <label class="">Country</label>
             <input
+              v-model="filter_country"
               type="text"
               class="form-control"
               placeholder="Type country name"
@@ -24,8 +25,8 @@
           </div>
           <div class="col-md-2">
             <label class="">Year</label>
-            <select class="form-control">
-              <option disabled selected>Choose year</option>
+            <select class="form-control" v-model="filter_year">
+              <option disabled value="">Choose year</option>
               <option
                 v-for="year in years"
                 v-bind:key="year"
@@ -34,8 +35,22 @@
             </select>
           </div>
           <div class="col-md-2">
-            <button class="btn btn-primary mt-4 col-12" @click="filterData()">
+            <button
+              title="Click to filter"
+              class="btn btn-primary mt-4 col-6"
+              @click="filterData()"
+            >
               Filter <i class="fas fa-filter ml-2"></i>
+            </button>
+            <button
+              @click="clearFilter()"
+              title="Clear filter"
+              v-if="
+                filter_rank != '' || filter_country != '' || filter_year != ''
+              "
+              class="btn btn-danger mt-4 ml-3 btn-sm"
+            >
+              <i class="fa-solid fa-xmark"></i>
             </button>
           </div>
 
@@ -56,7 +71,7 @@
               </button>
 
               <button v-if="!uploadBtn" class="btn btn-warning btn-sm mr-3">
-                  <i class="fa fa-spinner fa-spin fa-2x fa-fw mr-2"></i>
+                <i class="fa fa-spinner fa-spin fa-2x fa-fw mr-2"></i>
                 Your file is uploading....Please wait a moment...
               </button>
               <!-- <div v-if="!uploadBtn" class="loader"></div> -->
@@ -103,6 +118,9 @@ export default {
           "content-type": "multipart/form-data",
         },
       },
+      filter_rank: "",
+      filter_country: "",
+      filter_year: "",
     };
   },
 
@@ -139,23 +157,25 @@ export default {
       $("#csvUpload").click();
     },
 
-    dataTbaleLoad(year = null , rank = null , country = null) {
+    dataTbaleLoad(year = null, rank = null, country = null) {
+      let point = this;
       $(function () {
         var table = $("#tablecsc").DataTable({
           processing: true,
           serverSide: true,
           language: {
-      processing: '<i class="text-primary fa fa-spinner fa-spin fa-1x fa-fw mr-2"></i> <span class="text-primary">Processing</span>'
-    },
+            processing:
+              '<i class="text-primary fa fa-spinner fa-spin fa-1x fa-fw mr-2"></i> <span class="text-primary">Processing</span>',
+          },
           ajax: {
             url: "/csv/list/get/datatable",
             type: "post",
             data: {
               _token: document.head.querySelector('meta[name="csrf-token"]')
                 .content,
-                year : year,
-                rank : rank,
-                country : country,
+              filter_year: point.filter_year,
+              filter_rank: point.filter_rank,
+              filter_country: point.filter_country,
             },
           },
 
@@ -172,11 +192,25 @@ export default {
       });
     },
 
-    filterData(){
-        $('#tablecsc').dataTable().fnDestroy();
+    filterData() {
+      if (
+        this.filter_rank == "" ||
+        this.filter_year == "" ||
+        this.filter_country == ""
+      ) {
+        this.Alert("warning", "Alteast one data is required to filter.");
+      } else {
+        $("#tablecsc").dataTable().fnDestroy();
         this.dataTbaleLoad();
+      }
     },
-
+    clearFilter() {
+      this.filter_rank = "";
+      this.filter_year = "";
+      this.filter_country = "";
+      $("#tablecsc").dataTable().fnDestroy();
+      this.dataTbaleLoad();
+    },
     Alert(data, message) {
       const Toast = Swal.mixin({
         toast: true,
@@ -197,7 +231,7 @@ export default {
       this.years.push(i);
     }
 
-    this.dataTbaleLoad()
+    this.dataTbaleLoad();
   },
 };
 </script>

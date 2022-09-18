@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Backend\CsvUploadController;
+use App\Http\Controllers\Backend\dashboardController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -23,7 +24,8 @@ Route::middleware([
     config('jetstream.auth_session'),
     'verified'
 ])->group(function () {
-    Route::get('/dashboard', function () {return view('dashboard'); })->name('dashboard');
+    Route::get('/dashboard', [dashboardController::class , 'index'])->name('dashboard');
+    Route::post('/dashboard/count', [dashboardController::class , 'dashboardCount'])->name('dashboard.count');
     Route::get('/csv/list', [CsvUploadController::class , 'index'])->name('csvlist.index');
     Route::post('/csv/list/get/datatable', [CsvUploadController::class , 'CsvdataTable'])->name('csvlist.get.datatable');
     Route::post('/csv/Upload', [CsvUploadController::class , 'store'])->name('csv.upload');

@@ -34,11 +34,26 @@ class CsvUploadController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function CsvdataTable()
+    public function CsvdataTable(Request $request)
     {
-        $data = CeleImportModel::all();
-        return DataTables::of($data)
-            ->make(true);
+        if($request->filter_rank == null && $request->filter_country == null && $request->filter_year == null){
+            $data = CeleImportModel::all();
+        }else if($request->filter_rank != null && $request->filter_country == null && $request->filter_year == null){
+            $data = CeleImportModel::where('rank' , $request->filter_rank)->get();
+        }else if($request->filter_rank == null && $request->filter_country != null && $request->filter_year == null){
+            $data = CeleImportModel::where('country' , $request->filter_country)->get();
+        }else if($request->filter_rank == null && $request->filter_country == null && $request->filter_year != null){
+            $data = CeleImportModel::where('year' , $request->filter_year)->get();
+        }else if($request->filter_rank != null && $request->filter_country != null && $request->filter_year == null){
+            $data = CeleImportModel::where(['rank' => $request->filter_rank , 'country' => $request->filter_country])->get();
+        }else if($request->filter_rank == null && $request->filter_country != null && $request->filter_year != null){
+            $data = CeleImportModel::where(['year' => $request->filter_year , 'country' => $request->filter_country])->get();
+        }else if($request->filter_rank != null && $request->filter_country == null && $request->filter_year != null){
+            $data = CeleImportModel::where(['rank' => $request->filter_rank , 'year' => $request->filter_year])->get();
+        }else{
+            $data = CeleImportModel::where(['rank' => $request->filter_rank , 'country' => $request->filter_country , 'year' => $request->filter_year])->get();
+        }
+        return DataTables::of($data)->make(true);
     }
 
     /**
