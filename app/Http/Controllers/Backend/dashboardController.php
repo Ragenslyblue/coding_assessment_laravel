@@ -52,20 +52,20 @@ class dashboardController extends Controller
 
         if($request->type == 'bar'){
             $barChertName = [];
-            $barCharts = DB::select(DB::raw("select recipient from (SELECT  recipient , `rank`  FROM thicktg_db.cele_import_models where year = '$current_year' order by `rank` desc) sub"));
+            $barCharts = DB::select(DB::raw("select recipient from (SELECT  recipient , `rank`  FROM cele_import_models where year = '$current_year' order by `rank` desc) sub"));
             if(!$barCharts){
                 $current_year = 2017;
-                $barCharts = DB::select(DB::raw("select recipient from (SELECT  recipient , `rank`  FROM thicktg_db.cele_import_models where year = '$current_year' order by `rank` desc) sub"));
+                $barCharts = DB::select(DB::raw("select recipient from (SELECT  recipient , `rank`  FROM cele_import_models where year = '$current_year' order by `rank` desc) sub"));
             }
             foreach($barCharts as $barChart){
                 $barChertName[] = $barChart->recipient;
             }
             return [$barChertName , $current_year];
         }else{
-            $pieCharts = DB::select(DB::raw("select recipient as name , `rank` as y from (SELECT  recipient , `rank`  FROM thicktg_db.cele_import_models where year = '$current_year' order by `rank` desc) sub"));
+            $pieCharts = DB::select(DB::raw("select recipient as name , `rank` as y from (SELECT  recipient , `rank`  FROM cele_import_models where year = '$current_year' order by `rank` desc) sub"));
             if(!$pieCharts){
                 $current_year = 2017;
-                $pieCharts = DB::select(DB::raw("select recipient as name , `rank` as y from (SELECT  recipient , `rank`  FROM thicktg_db.cele_import_models where year = '$current_year' order by `rank` desc) sub"));
+                $pieCharts = DB::select(DB::raw("select recipient as name , `rank` as y from (SELECT  recipient , `rank`  FROM cele_import_models where year = '$current_year' order by `rank` desc) sub"));
             }
             return [$pieCharts , $current_year];
         }

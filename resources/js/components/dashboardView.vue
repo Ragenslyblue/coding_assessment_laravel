@@ -9,7 +9,7 @@
 				</div>
 				<div class="dbox__body">
 					<span class="dbox__count" v-text="personEntry"></span>
-					<!-- <span class="dbox__count">8,252</span> -->
+					<span class="dbox__count" v-text="personEntryCount"></span>
 					<span class="dbox__title fw-bolder">Most Person Entries</span>
 				</div>
 
@@ -23,7 +23,7 @@
 				</div>
 				<div class="dbox__body">
 					<span class="dbox__count" v-text="countryEntry"></span>
-					<!-- <span class="dbox__count">100</span> -->
+					<span class="dbox__count" v-text="countryEntryCount"></span>
 					<span class="dbox__title fw-bolder">Most Country Entries</span>
 				</div>
 
@@ -37,13 +37,10 @@
 				</div>
 				<div class="dbox__body">
                     <span class="dbox__count" v-text="careerEntry"></span>
-					<!-- <span class="dbox__count">2502</span> -->
+                    <span class="dbox__count" v-text="careerEntryCount"></span>
 					<span class="dbox__title fw-bolder">Most Career Entries</span>
 				</div>
 
-				<!-- <div class="dbox__action">
-					<button class="dbox__action__btn">More Info</button>
-				</div>				 -->
 			</div>
 		</div>
 	</div>
@@ -65,8 +62,11 @@
         data(){
             return {
                 personEntry : '',
+                personEntryCount : '',
                 countryEntry : '',
+                countryEntryCount : '',
                 careerEntry : '',
+                careerEntryCount : '',
             }
         },
 
@@ -179,14 +179,18 @@
             let point = this;
             axios.post('/dashboard/count')
             .then((response)=>{
+                console.log(response.data)
                 if(response.data[0].length > 0){
                     point.personEntry = response.data[0][0]['recipient']
+                    point.personEntryCount = response.data[0][0]['person_count']
                 }
                 if(response.data[1].length > 0){
                     point.countryEntry = response.data[1][0]['country']
+                    point.countryEntryCount = response.data[1][0]['country_count']
                 }
                 if(response.data[2].length > 0){
                     point.careerEntry = response.data[2][0]['career']
+                    point.careerEntryCount = response.data[2][0]['career_count']
                 }
                 console.log(response.data[0])
             })

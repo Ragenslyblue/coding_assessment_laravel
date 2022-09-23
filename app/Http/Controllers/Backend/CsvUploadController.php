@@ -7,6 +7,7 @@ use App\Models\CeleImportModel;
 use App\Models\User;
 use App\Repositories\Interfaces\fileUploaderInterface;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\File;
 use Yajra\DataTables\DataTables;
 use Illuminate\Support\Facades\Validator;
 
@@ -78,7 +79,7 @@ class CsvUploadController extends Controller
         $csvFile->move($file_path, $file_name);
 
         $csvFileUpload = $this->fileUploader->csvUpload($file_path . '/' . $file_name);
-
+        File::delete($file_path . '/' . $file_name);
         return $csvFileUpload;
     }
 
